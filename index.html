@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ирээдүйн Багш | 10 Жилийн Замнал (Бүтэн Эх)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4ecca3; /* Neon Green/Mint */
+            --accent: #ffd700; /* Gold */
+            --dark: #0b0c10;
+            --gray: #1f2833;
+            --light: #c5c6c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 3D Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1f2833 0%, #0b0c10 100%);
+        }
+
+        /* Main Container */
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 0 5%;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-top: 2rem;
+        }
+
+        .highlight {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(78, 204, 163, 0.5);
+        }
+
+        .gold {
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            perspective: 1000px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(50px) translateZ(-100px);
+            animation: fadeInUp 1.5s forwards 0.5s;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1.5s forwards 1s;
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 0;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 3D Glass Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: transform 0.1s;
+            cursor: pointer;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex; /* For better content alignment */
+            flex-direction: column;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        /* Timeline / Roadmap */
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background: var(--primary);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: var(--dark);
+            border: 3px solid var(--accent);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .left { left: 0; text-align: right; }
+        .right { left: 50%; text-align: left; }
+        .left::after { right: -10px; }
+        .right::after { left: -10px; }
+
+        .timeline-content {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 50px;
+            background: rgba(0,0,0,0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0) translateZ(0); }
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .timeline::after { left: 31px; }
+            .container { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .left { text-align: left; }
+            .left::after, .right::after { left: 21px; }
+            .hero h1 { font-size: 2.5rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <main>
+        <section class="hero">
+            <h1>Миний 10 Жилийн Замнал: “<span class="highlight">Ирээдүйн Багш</span>”</h1>
+            <p style="font-style: italic;">“Би дараагийн 10 жилд зөвхөн хичээл заахгүй. Би ирээдүйг заана.”</p>
+            <p style="font-size: 1rem; max-width: 700px;">
+                2025 оны хаврын нэгэн өглөө би ангийнхаа хоосон ширээнүүдийг харан зогсож байв. Цагаан самбарын гадарга дээр гэрлийн зурвас тусахад миний сэтгэлд энэ бодол тодорсон. Энэ бол миний мэргэжлийн амьдралын дараагийн арвант жилийг зураглах бүтээл юм.
+            </p>
+        </section>
+
+        <section id="philosophy">
+            <h2>I. Багшлахуйн Философи</h2>
+            <blockquote style="font-style: italic; font-size: 1.2rem; color: var(--light); border-left: 3px solid var(--accent); padding-left: 15px; margin-bottom: 2rem;">
+                "Би багшлахыг домгийн сахиусан жигүүр мэтээр төсөөлдөг. Нэг жигүүр нь мэдлэг, нөгөө нь хүмүүжил. Хоёр нь зэрэг хөдлөхгүй бол хүүхдүүд нисэж чаддаггүй."
+            </blockquote>
+            <div class="grid">
+                <div class="card js-tilt">
+                    <div class="card-content">
+                        <h3>Амьд Түүхийн Аялал</h3>
+                        <p>Хичээлийг дан мэдээлэл биш амьд түүхийн аялал болгоно.</p>
+                    </div>
+                </div>
+                <div class="card js-tilt">
+                    <div class="card-content">
+                        <h3>Прогрессивизм (дэвшилтэт үзэл)</h3>
+                        <p>Прогрессивистууд нь мөн чанарыг голын урсгалтай зүйрлэн, үргэлж өөрчлөгдөж байдаг гэж үздэг. Тиймээс тэрхүү өөрчлөлттэй зэрэгцэхийн тулд мэдлэгээ байнга өөрчилж, шинэчилж байх ёстой.</p>
+                    </div>
+                </div>
+                <div class="card js-tilt">
+                    <div class="card-content">
+                        <h3>Бүтээлч Асуулт</h3>
+                        <p>"Яагаад?", "Хэн?", "Хэзээ?" гэхээс илүү <span class="gold">“Хэрвээ тэгвэл яах вэ?”</span> гэсэн бүтээлч асуулт давамгайлсан анги бий болгоно.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="languages">
+            <h2>II. Хэлний Дөрвөн Хаалгыг Нээсэн Аялал</h2>
+            <p>Ирэх арван жил миний хувьд хэлний экспедиц байх болно. Хэл бүр миний хичээлийг илүү олон өнгөөр гэрэлтүүлнэ. Энэ бол багшийн зэвсэг.</p>
+            <div class="grid" style="margin-top: 2rem;">
+                <div class="card js-tilt" style="border-bottom: 3px solid #ff4b4b;">
+                    <div class="card-content">
+                        <h3>1. Англи Хэл (2026)</h3>
+                        <p><strong></strong> IELTS 7.0+ авч, дэлхийн түүхийн эх сурвалцаас шууд уншдаг багш болно.</p>
+                    </div> 
+                </div>
+                <div class="card js-tilt" style="border-bottom: 3px solid #ffd700;">
+                    <div class="card-content">
+                        <h3>2. Хятад Хэл (2027)</h3>
+                        <p><strong></strong> HSK4 төвшин. Хятад эх сурвалц, археологийн судалгааг хичээлдээ оруулна.</p>
+                    </div>
+                </div>
+                <div class="card js-tilt" style="border-bottom: 3px solid #0055ff;">
+                    <div class="card-content">
+                        <h3>3. Орос Хэл (2028–2029)</h3>
+                        <p><strong></strong> B2 түвшинд хүрч, оросын түүхийн сурвалцын эхийг сурагчдад жинхэнэ өнгөөр нь хүргэнэ.</p>
+                    </div>
+                </div>
+                <div class="card js-tilt" style="border-bottom: 3px solid #4ecca3;">
+                    <div class="card-content">
+                        <h3>4. Араб Хэл</h3>
+                        <p><strong></strong> Араб хэлний суурьтай болж, исламын соёл иргэншлийн эх сурвалж, музейн мэдээллийг шинэ түвшинд ашиглана.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats">
+            <h2>III. Миний Сурагчдын Алтан Амжилтын Тайлан (2030 он)</h2>
+            <blockquote style="font-style: italic; color: var(--accent); margin-bottom: 2rem;">
+                "Сурагчдынхаа амжилтыг харах мөч бүрт миний дотоод зүрхний хэмнэл: 'Би зөв зүгт алхаж байна' гэж хэлнэ."
+            </blockquote>
+            <div class="grid">
+                <div class="card js-tilt">
+                    <div class="card-content center">
+                        <h1 class="gold">750-800</h1>
+                        <p>Оноотой 10–15 сурагч (ЭЕШ)</p>
+                    </div>
+                </div>
+                <div class="card js-tilt">
+                    <div class="card-content center">
+                        <h1 class="gold">3-5</h1>
+                        <p> Жил бүр бүсийн олимпиадаас медаль хүртэнэ</p>
+                    </div>
+                </div>
+                <div class="card js-tilt">
+                    <div class="card-content center">
+                        <h1 class="gold">20-30</h1>
+                        <p>"Жижиг судлаач" хөтөлбөрөөр судалгаа хийнэ</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="community">
+            <h2>IV. Анги, Эцэг Эх, Олон Нийт: Миний Тойрон Хүрээлэх Орчлон</h2>
+           
+            <div class="grid">
+                <div class="card js-tilt">
+                    <div class="card-content">
+                        <h3>Эцэг Эхтэй Хамтын Ажиллагаа</h3>
+                        <p>Эцэг эхэд зориулсан подкаст, товхимол гаргана. Жил бүр 2 удаа нээлттэй хичээл зохион байгуулна.</p>
+                    </div>
+                </div>
+                <div class="card js-tilt" 
+                    <div class="card-content">
+                        <h3>Хамтын Аялал ба Клуб</h3>
+                        <p>Музей, их сургуулиудтай хамтын аялал. Түүх-нийгмийн ухааны клуб байгуулж "бяцхан дипломатчид"-ыг төрүүлнэ.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap">
+            <h2>V. Миний Академик Замнал & VI. Дэлхий Тойрсон Аялал</h2>
+            <div class="timeline">
+                <div class="container right">
+                    <div class="timeline-content">
+                        <h3 class="gold">2026–2028: Магистр</h3>
+                        <h4>Монгол сурагчийн сэтгэлгээний онцлог</h4>
+                        <p>Нэг өглөө гаднын их сургуулийн номын санд сууж өгүүлэл бичиж сууна гэж төсөөлдөг. Хэлний оноогоо бүрдүүлж, судалгааны өгүүллүүд хэвлүүлнэ. <br>**Судалгаа:** Японд Lesson Study судална.</p>
+                    </div>
+                </div>
+                <div class="container left">
+                    <div class="timeline-content">
+                        <h3 class="gold">2029–2033: Доктор</h3>
+                        <h4>Түүхийн сургалтын шинэ арга зүй</h4>
+                        <p>Докторын зэрэг хамгаалж, Монголын сурагчдад тохирсон шинэ арга зүй боловсруулна. Олон улсын хуралд илтгэл тавина. <br>**Судалгаа:** Хятадын археологийн сан хөмрөг, Германд Берлиний ханыг ашиглах арга зүйг судална.</p>
+                    </div>
+                </div>
+                <div class="container right">
+                    <div class="timeline-content">
+                        <h3 class="gold">Дэлхийгээр Аялах Тэмдэглэл</h3>
+                        <h4>Багш хүн болохуйн судалгаа</h4>
+                        <p>Египетийн пирамидын сүүдэрт сууж, ирэх хичээлээ төлөвлөнө. Эдгээр аялал бол зүгээр жуулчлал биш, харин миний багш хүн болохуйн судалгаа юм.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <h2>2035 он: “Би хэн болох вэ?”</h2>
+            <p style="max-width: 600px; margin: 2rem auto;">
+                2035 онд би цагаан самбарын өмнө дахин зогсоно. Гэхдээ энэ удаа би зүгээр нэг багш биш.
+            </p>
+            <h3 class="gold">
+                Олон хэлтэй, Олон улсын туршлагатай, Судлаач, Сурагчдынхаа ирээдүйг гэрэлтүүлэгч багш болсон байна.
+            </h3>
+            <p style="margin-top: 1rem;">Энэ бүтээл бол миний мөрөөдлийн зураглал бус энэ бол миний өөрөө бүтээх ирээдүй.</p>
+        </footer>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ----------------------------------------------------
+        // 1. THREE.JS BACKGROUND ANIMATION (Space/Particles)
+        // ----------------------------------------------------
+        const canvas = document.querySelector('#bg-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Create Particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        // Material for particles
+        const material = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0x4ecca3,
+            transparent: true,
+            opacity: 0.8,
+        });
+
+        // Mesh
+        const particlesMesh = new THREE.Points(particlesGeometry, material);
+        scene.add(particlesMesh);
+
+        // Lighting
+        const pointLight = new THREE.PointLight(0xffffff, 0.1);
+        pointLight.position.x = 2;
+        pointLight.position.y = 3;
+        pointLight.position.z = 4;
+        scene.add(pointLight);
+
+        camera.position.z = 3;
+
+        // Interaction Variables
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Mouse Move Event
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+        });
+
+        // Scroll Animation Variables
+        let scrollY = 0;
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        const animate = () => {
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotate entire particle system slowly
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = elapsedTime * 0.02;
+
+            // Mouse Interaction (Parallax)
+            particlesMesh.rotation.y += mouseX * 0.00005;
+            particlesMesh.rotation.x += mouseY * 0.00005;
+
+            // Scroll Interaction (Zoom effect)
+            camera.position.z = 3 - (scrollY * 0.0005); 
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        // Responsive resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ----------------------------------------------------
+        // 2. 3D TILT EFFECT FOR CARDS (Vanilla JS)
+        // ----------------------------------------------------
+        const cards = document.querySelectorAll('.js-tilt');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+            });
+        });
+
+    </script>
+</body>
+</html>
